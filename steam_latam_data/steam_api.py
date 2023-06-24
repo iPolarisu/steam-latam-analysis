@@ -1,7 +1,6 @@
 import requests
 
 API_KEY = 'API_KEY'
-initial_id = 'initial_id'
 base_url = 'http://api.steampowered.com'
 
 def get_friend_list(user_id):
