@@ -25,7 +25,7 @@ def process_steamids(steamids, group_size):
             break
 
 def save_user_info_to_csv(user_info):
-    fieldnames = ['steamid', 'personaname', 'lastlogoff', 'timecreated', 'gameid', 'loccountrycode', 'locstatecode', 'loccityid']
+    fieldnames = ['steamid', 'personaname', 'lastlogoff', 'timecreated', 'gameid', 'gameextrainfo', 'loccountrycode', 'locstatecode', 'loccityid']
     with open('user_info.csv', 'a', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         for user in user_info:
@@ -35,6 +35,7 @@ def save_user_info_to_csv(user_info):
                 'lastlogoff': user.get('lastlogoff'),
                 'timecreated': user.get('timecreated'),
                 'gameid': user.get('gameid'),
+                'gameextrainfo' : user.get('gameextrainfo'),
                 'loccountrycode': user.get('loccountrycode'),
                 'locstatecode': user.get('locstatecode'),
                 'loccityid': user.get('loccityid')
