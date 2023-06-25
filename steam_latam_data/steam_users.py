@@ -1,6 +1,7 @@
 import steam_api
 import csv
 from urllib3.exceptions import ConnectTimeoutError
+import time
 
 def read_csv_file(file_path):
     data = []
@@ -11,13 +12,13 @@ def read_csv_file(file_path):
             data.append(row[1])
     return data
 
-def process_steamids(steamids, group_size):
-    total_groups = len(steamids) // group_size + 1
-    for group_num in range(total_groups):
+def process_steamids(steamids, group_size, start, end):
+    for group_num in range(start, end):
         start_index = group_num * group_size
         end_index = (group_num + 1) * group_size
         steamids_group = steamids[start_index:end_index]
         try:
+            time.sleep(0.5)
             user_info = steam_api.get_user_info(steamids_group)
             save_user_info_to_csv(user_info)
         except ConnectTimeoutError:
@@ -47,6 +48,11 @@ csv_file_path = 'friends.csv'
 steamids = read_csv_file(csv_file_path)
 
 group_size = 100
-process_steamids(steamids, group_size)
+total_groups = len(steamids) // group_size + 1 #10362
+groups = total_groups // 4
+iter = 1
+start = groups*(iter-1)
+end = groups*(iter) 
+process_steamids(steamids, group_size, start, end)
 
 
