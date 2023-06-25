@@ -1,8 +1,44 @@
 -- This script finds the actors/actresses that have acted together the most times
 
+-- Input: (id0, id1, friends_since)
+friends_raw = LOAD '/data/2023/uhadoop/rucu/steam/friends.csv' USING PigStorage(',') AS (id0, id1, friends_since);
+
 -- Input: (actor, title, year, num, type, episode, billing, char)
-raw = LOAD 'hdfs://cm:9000/uhadoop/shared/imdb/imdb-stars-test.tsv' USING PigStorage('\t') AS (actor, title, year, num, type, episode, billing, char);
--- Later you can change the above file to 'hdfs://cm:9000/uhadoop/shared/imdb/imdb-stars.tsv' to see the full output
+users_raw = LOAD '/data/2023/uhadoop/rucu/steam/user_info1.csv' USING PigStorage(',') AS (steamid: chararray, personaname: chararray, lastlogoff: long, timecreated: long, gameid: chararray, gameextrainfo: chararray, loccountrycode: chararray, locstatecode: chararray, loccityid: int);
+users_raw2 = LOAD '/data/2023/uhadoop/rucu/steam/user_info2.csv' USING PigStorage(',') AS (steamid: chararray, personaname: chararray, lastlogoff: long, timecreated: long, gameid: chararray, gameextrainfo: chararray, loccountrycode: chararray, locstatecode: chararray, loccityid: int);
+users_raw3 = LOAD '/data/2023/uhadoop/rucu/steam/user_info_3.csv' USING PigStorage(',') AS (steamid: chararray, personaname: chararray, lastlogoff: long, timecreated: long, gameid: chararray, gameextrainfo: chararray, loccountrycode: chararray, locstatecode: chararray, loccityid: int);
+users_raw4 = LOAD '/data/2023/uhadoop/rucu/steam/user_info4.csv' USING PigStorage(',') AS (steamid: chararray, personaname: chararray, lastlogoff: long, timecreated: long, gameid: chararray, gameextrainfo: chararray, loccountrycode: chararray, locstatecode: chararray, loccityid: int);
+users_raw = UNION users_raw, users_raw2;
+users_raw = UNION users_raw, users_raw3;
+users_raw = UNION users_raw, users_raw4;
+
+-- carga general
+
+steam_users_filtered = FILTER users_raw BY loccountrycode IS NOT NULL AND gameextrainfo IS NOT NULL;
+
+
+
+steam_users_nulls_as_category = FOREACH users_raw GENERATE (loccountrycode IS NULL ? 'Desconocido' : loccountrycode) AS loccountrycode, (gameextrainfo IS NULL ? 'Desconocido' : gameextrainfo) AS gameextrainfo, steamid, personaname, lastlogoff, timecreated, gameid, locstatecode, loccityid;
+
+country_game = FOREACH steam_users_filtered GENERATE loccountrycode, gameextrainfo;
+
+grouped = GROUP country_game BY (loccountrycode, gameextrainfo);
+counts = FOREACH grouped GENERATE group AS ((loccountrycode, gameextrainfo)), COUNT(country_game) AS num_ocurrencias;
+-- Sabemos cuenta de pais-juego actual.
+
+-- analisis de cuenta privada ###
+
+-- analisis juegos con mas amigos jugando al mismo TIEMPO
+
+-- analisis de amistades antiguas.
+
+
+
+
+
+users_group = GROUP steam_users_nulls_as_category BY (loccountrycode: chararray, gameextrainfo: chararray);
+count = FOREACH country_game GENERATE group AS (loccountrycode: chararray, gameextrainfo: chararray), COUNT(steam_users_nulls_as_category) AS count;
+
 
 -- Line 1: Filter raw to make sure type equals 'THEATRICAL_MOVIE' 
 movies = FILTER raw BY type == 'THEATRICAL_MOVIE';
