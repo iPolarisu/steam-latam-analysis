@@ -59,10 +59,22 @@ friends_game_count = FOREACH friends_game_group GENERATE group AS game, COUNT($1
 friends_game_count_order = ORDER friends_game_count BY count DESC;
 friends_game = LIMIT friends_game_count_order 10;
 
+-- amigos paises
+friends_country_null_filter = FILTER friend_info BY $3 IS NOT NULL AND $6 IS NOT NULL;
+friend_country_group = GROUP friends_country_null_filter by ($3, $6);
+friend_country_count = FOREACH friend_country_group GENERATE group AS countries, COUNT($1) AS count;
+friend_country_alphorder = FOREACH friend_country_count GENERATE ($0.$0 > $0.$1 ? ( CONCAT($0.$1, $0.$0) AS id, $0.$1, $0.$0, $1) : (CONCAT($0.$0, $0.$1) AS id, $0.$0, $0.$1, $1)); 
+friend_country_regroup = GROUP friend_country_alphorder BY $0.$0;
+friends_country_flatten = FOREACH friend_country_regroup GENERATE $0, FLATTEN($1);
 
+--GROUP NO AGRUPA 
+
+friend_country_order = ORDER friends_country_recount BY $1 DESC;
 --grouped = GROUP full_join  ALL;
 --counted = FOREACH grouped GENERATE COUNT(full_join) AS num_filas; 
 -- 559214
+
+--((AD,AR),{((AD,AR,34))})
 
 
 -- analisis juegos con mas amigos jugando al mismo TIEMPO
@@ -72,34 +84,29 @@ steam_users_nulls_as_category = FOREACH users_raw GENERATE (loccountrycode IS NU
 
 users_group = GROUP steam_users_nulls_as_category BY (loccountrycode: chararray, gameextrainfo: chararray);
 count = FOREACH country_game GENERATE group AS (loccountrycode: chararray, gameextrainfo: chararray), COUNT(steam_users_nulls_as_category) AS count;
-
-
--- Line 1: Filter raw to make sure type equals 'THEATRICAL_MOVIE' 
-movies = FILTER raw BY type == 'THEATRICAL_MOVIE';
-
--- Line 2: Generate new relation with full movie name (concatenating title+##+year+##+num) and actor
-full_movies = FOREACH movies GENERATE CONCAT(title,'##',year,'##',num), actor;
-
--- Line 3 + 4: Generate the co-star pairs 
-full_movies_alias = FOREACH full_movies GENERATE $0, $1;
-movie_actor_pairs = JOIN full_movies BY $0, full_movies_alias by $0;
-
--- Line 5: filter to ensure that the first co-star is lower alphabetically than the second
-movie_actor_pairs_unique = FILTER movie_actor_pairs BY full_movies::actor < full_movies_alias::actor;
-
--- Line 6: concatenate the co-stars into one column 
-simply_actor_pairs = FOREACH movie_actor_pairs_unique GENERATE CONCAT(full_movies::actor,'##',full_movies_alias::actor) AS actor_pair;
-
--- Line 7: group the relation by co-stars
-actor_pairs_grouped = GROUP simply_actor_pairs BY actor_pair;
-
--- Line 8: count each group of co-stars
-actor_pair_count = FOREACH actor_pairs_grouped GENERATE COUNT($1) AS count, group AS actor_pair; 
-
--- Line 9: order the count in descending order
-ordered_actor_pair_count = ORDER actor_pair_count BY count DESC; 
+ 
 
 -- output the final count
 -- TODO: REPLACE ahogan WITH YOUR FOLDER
 STORE ordered_actor_pair_count INTO '/uhadoop2010/rucu/imdb-costars/';
 
+AR CL 34 
+CL AR 40
+Ar AF 20
+join
+AR CL 34 CL AR 40
+Cl AR 40 AR CL 34
+AR AF 20 null null null=0
+
+filter null = 0
+foreach tup generate $0 $1 $2 + $5
+AR CL 74
+CL AR 74
+AR AF 20
+
+DISTINCT
+
+
+
+AR CL 74
+AR AF 20
