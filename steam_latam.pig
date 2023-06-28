@@ -1,19 +1,21 @@
--- SteamDB Analysis
+-- Steam Latam Users Analysis
 
--- friends table, has data on friend relationships between accounts
+-- load friends table, has data on friends relationships between accounts (will use the second one to remove duplicated relations)
 -- Input: (id0, id1, friends_since)
 friends_raw = LOAD 'uhadoop2023/rucu/friends.csv' USING PigStorage(',') AS (id0, id1, friends_since);
 friends_raw2 = LOAD 'uhadoop2023/rucu/friends.csv' USING PigStorage(',') AS (id0, id1, friends_since);
 
--- users table, has info on queried steam users (split into multiple parts)
+-- load users table, has info on queried steam users (split into multiple parts)
 -- Input: (actor, title, year, num, type, episode, billing, char)
 users_raw = LOAD 'uhadoop2023/rucu/user_info1.csv' USING PigStorage(',') AS (steamid: chararray, personaname: chararray, lastlogoff: long, timecreated: long, gameid: chararray, gameextrainfo: chararray, loccountrycode: chararray, locstatecode: chararray, loccityid: int);
 users_raw2 = LOAD 'uhadoop2023/rucu/user_info2.csv' USING PigStorage(',') AS (steamid: chararray, personaname: chararray, lastlogoff: long, timecreated: long, gameid: chararray, gameextrainfo: chararray, loccountrycode: chararray, locstatecode: chararray, loccityid: int);
-users_raw3 = LOAD 'uhadoop2023/rucu/user_info_3.csv' USING PigStorage(',') AS (steamid: chararray, personaname: chararray, lastlogoff: long, timecreated: long, gameid: chararray, gameextrainfo: chararray, loccountrycode: chararray, locstatecode: chararray, loccityid: int);
+users_raw3 = LOAD 'uhadoop2023/rucu/user_info3.csv' USING PigStorage(',') AS (steamid: chararray, personaname: chararray, lastlogoff: long, timecreated: long, gameid: chararray, gameextrainfo: chararray, loccountrycode: chararray, locstatecode: chararray, loccityid: int);
 users_raw4 = LOAD 'uhadoop2023/rucu/user_info4.csv' USING PigStorage(',') AS (steamid: chararray, personaname: chararray, lastlogoff: long, timecreated: long, gameid: chararray, gameextrainfo: chararray, loccountrycode: chararray, locstatecode: chararray, loccityid: int);
+users_raw5 = LOAD 'uhadoop2023/rucu/user_info5.csv' USING PigStorage(',') AS (steamid: chararray, personaname: chararray, lastlogoff: long, timecreated: long, gameid: chararray, gameextrainfo: chararray, loccountrycode: chararray, locstatecode: chararray, loccityid: int);
 users_raw = UNION users_raw, users_raw2;
 users_raw = UNION users_raw, users_raw3;
 users_raw = UNION users_raw, users_raw4;
+users_raw = UNION users_raw, users_raw5;
 
 -- remove duplicated users and count them
 users = DISTINCT users_raw;
