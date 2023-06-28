@@ -19,8 +19,9 @@ users_raw = UNION users_raw, users_raw5;
 
 -- remove duplicated users and count them
 users = DISTINCT users_raw;
-grouped = GROUP users  ALL;
-counted = FOREACH grouped GENERATE COUNT(users_raw) AS num_filas; 
+grouped_users = GROUP users  ALL;
+counted_users = FOREACH grouped_users GENERATE COUNT(users_raw) AS num_filas;
+STORE counted_users INTO '/uhadoop2023/users-counted/';
 -- distinct users: 452472
 
 -- users per country
@@ -28,7 +29,9 @@ country_filtered = FILTER users BY loccountrycode IS NOT NULL;
 group_country = GROUP country_filtered By loccountrycode;
 country = FOREACH group_country GENERATE group AS loccountrycode, COUNT(country_filtered) as count;
 country_count = FOREACH country GENERATE loccountrycode, count;
-order_country = ORDER country_count BY count DESC; 
+order_country = ORDER country_count BY count DESC;
+STORE order_country INTO '/uhadoop2023/order-country/';
+
 
 -- most played games by country (at the moment of being queried)
 steam_users_filtered = FILTER users BY loccountrycode IS NOT NULL AND gameextrainfo IS NOT NULL;
@@ -39,16 +42,17 @@ order_country_game = ORDER counts BY num_ocurrencias DESC;
 count_group = GROUP order_country_game by $0.$0;
 max_count_tuple = FOREACH count_group { ordered_tuples = ORDER $1 BY num_ocurrencias DESC; top_tuple = LIMIT ordered_tuples 1; GENERATE $0 AS loccountrycode, top_tuple;};
 max_game_country_flatten = FOREACH max_count_tuple GENERATE FLATTEN($1); 
-max_game_country = FOREACH max_game_country_flatten GENERATE $0.$0, $0.$1, $1; 
+max_game_country = FOREACH max_game_country_flatten GENERATE $0.$0, $0.$1, $1;
+STORE max_game_country INTO '/uhadoop2023/max-game-country/';
 
 -- removing inverse relationships between friends (id1, id2 <-> id2, id1)
 repeated_friends = JOIN friends_raw BY (id0, id1) LEFT OUTER, friends_raw2 BY (id1, id0);
 friends_all = FILTER repeated_friends BY $3 is null;
 friends = FOREACH friends_all GENERATE $0, $1, $2;
-
---grouped = GROUP friends  ALL;
---counted = FOREACH grouped GENERATE COUNT(friends) AS num_filas; 
---1017591
+grouped_friends = GROUP friends  ALL;
+counted_friends = FOREACH grouped_friends GENERATE COUNT(friends) AS num_filas;
+STORE counted_friends INTO '/uhadoop2023/rucu/friends-counted/';
+-- friends: 1017591
 
 friend_right_join = JOIN friends BY $0 right outer, users by steamid; 
 full_friend_join = JOIN friend_right_join BY $1 right outer, users by steamid;
@@ -60,6 +64,7 @@ friends_game_group = GROUP friends_game_null_filter by $2;
 friends_game_count = FOREACH friends_game_group GENERATE group AS game, COUNT($1) AS count;
 friends_game_count_order = ORDER friends_game_count BY count DESC;
 friends_game = LIMIT friends_game_count_order 10;
+STORE friends_game INTO '/uhadoop2023/friends-same-game/';
 
 -- friends by country
 friends_country_null_filter = FILTER friend_info BY $3 IS NOT NULL AND $6 IS NOT NULL;
@@ -68,6 +73,7 @@ friend_country_count = FOREACH friend_country_group GENERATE group AS countries,
 friend_country_alphorder = FOREACH friend_country_count GENERATE ($0.$0 > $0.$1 ? ( CONCAT($0.$1, $0.$0) AS id, $0.$1, $0.$0, $1) : (CONCAT($0.$0, $0.$1) AS id, $0.$0, $0.$1, $1)); 
 friend_country_regroup = GROUP friend_country_alphorder BY $0.$0;
 friends_country_flatten = FOREACH friend_country_regroup GENERATE $0, FLATTEN($1);
+STORE friends_country_flatten INTO '/uhadoop2023/friends-country/';
 
 --GROUP NO AGRUPA 
 
@@ -75,14 +81,3 @@ friend_country_order = ORDER friends_country_recount BY $1 DESC;
 --grouped = GROUP full_join  ALL;
 --counted = FOREACH grouped GENERATE COUNT(full_join) AS num_filas; 
 -- 559214
-
---((AD,AR),{((AD,AR,34))})
-
-
--- analisis juegos con mas amigos jugando al mismo TIEMPO
-
-steam_users_nulls_as_category = FOREACH users_raw GENERATE (loccountrycode IS NULL ? 'Desconocido' : loccountrycode) AS loccountrycode, (gameextrainfo IS NULL ? 'Desconocido' : gameextrainfo) AS gameextrainfo, steamid, personaname, lastlogoff, timecreated, gameid, locstatecode, loccityid;
-
-
-users_group = GROUP steam_users_nulls_as_category BY (loccountrycode: chararray, gameextrainfo: chararray);
-count = FOREACH country_game GENERATE group AS (loccountrycode: chararray, gameextrainfo: chararray), COUNT(steam_users_nulls_as_category) AS count;
