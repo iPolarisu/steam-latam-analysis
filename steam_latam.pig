@@ -21,7 +21,7 @@ users_raw = UNION users_raw, users_raw5;
 -- remove duplicated users and count them
 users = DISTINCT users_raw;
 grouped_users = GROUP users  ALL;
-counted_users = FOREACH grouped_users GENERATE COUNT(users_raw) AS num_filas;
+counted_users = FOREACH grouped_users GENERATE COUNT(users) AS num_filas;
 STORE counted_users INTO '/uhadoop2023/rucu/users-counted/';
 -- distinct users: 452472
 
