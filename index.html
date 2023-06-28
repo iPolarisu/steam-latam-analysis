@@ -136,26 +136,13 @@
 		============================ -->
         <section id="analysis_data">
           <h2>About the Data</h2>
-          <p class="lead">Follow the steps below to setup your site template:</p>
+          <p class="lead">The data is a pretty big sample of Latin American Steam Users and their connections (friendship links between accounts), it is inspired by <a target="_blank" href="https://steam.internet.byu.edu/">this study</a>. The acquisition method is partially based on <a target="_blank" href="https://steam.internet.byu.edu/oneill-condensing-steam.pdf">this paper</a>, it's basically divided in three parts:</p>
           <ol>
-            <li>Unzip the downloaded package and open the <strong>/HTML</strong> folder to find all the template files. You will need to upload these files to your hosting web server using FTP or localhost in order to use it on your website.</li>
-            <li>Below is the folder structure and needs to be uploaded to your website or localhost root directory:
-            <ul>
-			<li><code>HTML/assets</code> - Contains all of the assets referenced
-			  <ul>
-                <li><code>HTML/css</code> - Stylesheet files</li>
-                <li><code>HTML/images</code> - Images files</li>
-                <li><code>HTML/js</code> - Javacript files</li>
-                <li><code>HTML/sass</code> - Sass files</li>
-                <li><code>HTML/vendor</code> – All external libs.</li>
-              </ul>
-			</li>
-			<li><code>HTML/index.html</code> - Homepage
-			</ul>
-            </li>
-            <li>You should upload all or specific HTML files as per your need.</li>
-            <li>You are good to go for adding your content now!</li>
+            <li>Obtain the IDs of the top 250 Steam Users from Latin America according to <a target="_blank" href="https://steamladder.com/ladder/friends/">Steam Ladder</a> via webscraping.</li>
+            <li>Obtain all of their friends lists using the SteamAPI.</li>
+            <li>Choose a particular date and obtain user information on all of the collected IDs (both friends and queried users) using the SteamAPI.</li>
           </ol>
+          <p class="alert alert-info">You can download the data <a target="_blank" href="https://github.com/iPolarisu/steam-latam-analysis/tree/main/steam_latam_data">here</a>.</p>
         </section>
         
 		<hr class="divider">
