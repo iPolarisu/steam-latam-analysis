@@ -5,6 +5,7 @@
 friends_raw = LOAD 'uhadoop2023/rucu/friends.csv' USING PigStorage(',') AS (id0, id1, friends_since);
 friends_raw2 = LOAD 'uhadoop2023/rucu/friends.csv' USING PigStorage(',') AS (id0, id1, friends_since);
 
+
 -- load users table, has info on queried steam users (split into multiple parts)
 -- Input: (actor, title, year, num, type, episode, billing, char)
 users_raw = LOAD 'uhadoop2023/rucu/user_info1.csv' USING PigStorage(',') AS (steamid: chararray, personaname: chararray, lastlogoff: long, timecreated: long, gameid: chararray, gameextrainfo: chararray, loccountrycode: chararray, locstatecode: chararray, loccityid: int);
@@ -21,7 +22,7 @@ users_raw = UNION users_raw, users_raw5;
 users = DISTINCT users_raw;
 grouped_users = GROUP users  ALL;
 counted_users = FOREACH grouped_users GENERATE COUNT(users_raw) AS num_filas;
-STORE counted_users INTO '/uhadoop2023/users-counted/';
+STORE counted_users INTO '/uhadoop2023/rucu/users-counted/';
 -- distinct users: 452472
 
 -- users per country
@@ -30,7 +31,7 @@ group_country = GROUP country_filtered By loccountrycode;
 country = FOREACH group_country GENERATE group AS loccountrycode, COUNT(country_filtered) as count;
 country_count = FOREACH country GENERATE loccountrycode, count;
 order_country = ORDER country_count BY count DESC;
-STORE order_country INTO '/uhadoop2023/order-country/';
+STORE order_country INTO '/uhadoop2023/rucu/order-country/';
 
 
 -- most played games by country (at the moment of being queried)
@@ -43,7 +44,7 @@ count_group = GROUP order_country_game by $0.$0;
 max_count_tuple = FOREACH count_group { ordered_tuples = ORDER $1 BY num_ocurrencias DESC; top_tuple = LIMIT ordered_tuples 1; GENERATE $0 AS loccountrycode, top_tuple;};
 max_game_country_flatten = FOREACH max_count_tuple GENERATE FLATTEN($1); 
 max_game_country = FOREACH max_game_country_flatten GENERATE $0.$0, $0.$1, $1;
-STORE max_game_country INTO '/uhadoop2023/max-game-country/';
+STORE max_game_country INTO '/uhadoop2023/rucu/max-game-country/';
 
 -- removing inverse relationships between friends (id1, id2 <-> id2, id1)
 repeated_friends = JOIN friends_raw BY (id0, id1) LEFT OUTER, friends_raw2 BY (id1, id0);
@@ -64,20 +65,17 @@ friends_game_group = GROUP friends_game_null_filter by $2;
 friends_game_count = FOREACH friends_game_group GENERATE group AS game, COUNT($1) AS count;
 friends_game_count_order = ORDER friends_game_count BY count DESC;
 friends_game = LIMIT friends_game_count_order 10;
-STORE friends_game INTO '/uhadoop2023/friends-same-game/';
+STORE friends_game INTO '/uhadoop2023/rucu/friends-same-game/';
 
 -- friends by country
 friends_country_null_filter = FILTER friend_info BY $3 IS NOT NULL AND $6 IS NOT NULL;
 friend_country_group = GROUP friends_country_null_filter by ($3, $6);
 friend_country_count = FOREACH friend_country_group GENERATE group AS countries, COUNT($1) AS count;
-friend_country_alphorder = FOREACH friend_country_count GENERATE ($0.$0 > $0.$1 ? ( CONCAT($0.$1, $0.$0) AS id, $0.$1, $0.$0, $1) : (CONCAT($0.$0, $0.$1) AS id, $0.$0, $0.$1, $1)); 
-friend_country_regroup = GROUP friend_country_alphorder BY $0.$0;
-friends_country_flatten = FOREACH friend_country_regroup GENERATE $0, FLATTEN($1);
-STORE friends_country_flatten INTO '/uhadoop2023/friends-country/';
+friend_country_alphorder = FOREACH friend_country_count GENERATE ($0.$0 > $0.$1 ? ($0.$1, $0.$0, $1) : ($0.$0, $0.$1, $1)); 
+friend_country_alias = FOREACH friend_country_alphorder GENERATE $0.$0, $0.$1, $0.$2;
+friend_country_regroup = GROUP friend_country_alias BY ($0, $1);
+friend_country_sum = FOREACH friend_country_regroup generate group, SUM(friend_country_alias.$2) AS sum;
+friend_country_order =  ORDER friend_country_sum BY sum DESC;
+friend_country = LIMIT friend_country_order 25;
+STORE friend_country INTO '/uhadoop2023/rucu/friends-country/';
 
---GROUP NO AGRUPA 
-
-friend_country_order = ORDER friends_country_recount BY $1 DESC;
---grouped = GROUP full_join  ALL;
---counted = FOREACH grouped GENERATE COUNT(full_join) AS num_filas; 
--- 559214
