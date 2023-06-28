@@ -1,5 +1,7 @@
 import requests
 
+# replace API_KEY with your key
+
 API_KEY = 'API_KEY'
 base_url = 'http://api.steampowered.com'
 
