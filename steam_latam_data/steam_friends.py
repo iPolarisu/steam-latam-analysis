@@ -19,6 +19,8 @@ with open(FILE_NAME, mode="w", newline="") as friends_file:
     writer = csv.writer(friends_file)
     writer.writerow(HEADERS)
 
+print(f"Obtaining friendlists for each user in {PATH_TO_INPUT}")
+
 iterations = 0
 skipped = 0
 with open(PATH_TO_INPUT, 'r') as input_file:
@@ -41,3 +43,4 @@ with open(PATH_TO_INPUT, 'r') as input_file:
         iterations += 1
 
 print("Job done!")
+print(f"Check {FILE_NAME} for your results!")

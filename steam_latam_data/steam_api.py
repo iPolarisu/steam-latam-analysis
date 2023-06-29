@@ -1,5 +1,7 @@
 import requests
 
+# replace API_KEY with your key
+
 API_KEY = 'API_KEY'
 base_url = 'http://api.steampowered.com'
 
@@ -21,5 +23,5 @@ def get_user_info(user_ids):
         if 'response' in data and 'players' in data['response']:
             return data['response']['players']
     except (requests.exceptions.RequestException, ValueError):
-        pass
+        print("Error getting user information!")
     return []
