@@ -395,31 +395,30 @@
 		<!-- results
 		============================ -->
 		<section id="pig_running">
-		  <h2>Running the Script</h2>
-		  <p class="text-4">Documentation and examples for displaying inline and multiline blocks of code</p>
+		  <h2>Running the Pig Script</h2>
+
+		  <p class="text-4">You basically have two options for running the script, locally or in cluster mode (if you happen to have one of course).</p>
 		  
-		  <h3 class="mt-5">Inline code</h3>
-		  <p>Wrap inline snippets of code with <code>&lt;code&gt;</code>. <span class="text-info">Be sure to escape HTML angle brackets</span>.</p>
-		  
-		  <p>For example, <code>&lt;section&gt;</code> should be wrapped as inline.</p>
-		  <pre><code class="html">For example, &lt;code&gt;&amp;lt;section&amp;gt;&lt;/code&gt; should be wrapped as inline.</code></pre>
-		  
-		  
-		  <h3 class="mt-5">Code blocks</h3>
-		  <p>Use <code>&lt;pre&gt;</code>s for multiple lines of code. <span class="text-info">Once again, be sure to escape any angle brackets in the code for proper rendering</span>. You may optionally add the <code>.pre-scrollable</code> class, which will set a max-height of 340px and provide a y-axis scrollbar.</p>
-		  <p><strong>For example:</strong></p>
-		  <pre><code class="html">&lt;p&gt;Sample text here...&lt;/p&gt;
-&lt;p&gt;And another line of sample text here...&lt;/p&gt;
-</code></pre>
-<p><strong>Have to use something like:</strong></p>
-<pre><code class="html">&lt;pre&gt;&lt;code&gt;&amp;lt;p&amp;gt;Sample text here...&amp;lt;/p&amp;gt;
-&amp;lt;p&amp;gt;And another line of sample text here...&amp;lt;/p&amp;gt;
-&lt;/pre&gt;&lt;/code&gt;
-</code></pre>
-		
-		<h3 class="mt-5">Syntax highlighter</h3>
-		<p>We use <strong><a target="_blank" href="https://highlightjs.org/">Highlight Js</a></strong> for syntax highlight code snippet.</p>
-		<p>You can refer more information here: <a class="btn btn-primary" target="_blank" href="https://highlightjs.org/usage/"><i class="fas fa-external-link-alt mr-1"></i> How to use highlight.js</a></p>
+		  <p class="text-4">Local</p>
+      <pre><code class="bash">
+        pig -x ./steam_latam.pig
+      </code></pre>
+      <p class="text-4">Cluster</p>
+      <pre><code class="bash">
+        pig ./steam_latam.pig
+      </code></pre>
+
+      <p class="text-4">If you want to test parts of the script, copy each line into the pig shell (grunt).</p>
+
+      <p class="text-4">Local</p>
+      <pre><code class="bash">
+        pig -x local
+      </code></pre>
+      <p class="text-4">Cluster</p>
+      <pre><code class="bash">
+        pig
+      </code></pre>
+
 		</section>
 		
 		<hr class="divider">
@@ -429,7 +428,6 @@
 		<section id="pig_results">
 		<h2>Results</h2>
 		<p class="text-4">Documentation and examples for opt-in styling of tables.</p>
-		<p>iDocs is based on Bootstrap 4, so you can easily use Bootstrap's table classes to style your table. <a class="ml-1" target="_blank" href="https://getbootstrap.com/docs/4.4/content/tables/"><i class="fas fa-external-link-alt"></i> Bootstrap Documentation</a></p>
 		
 		<h3 class="mt-5">Bordered</h3>
 		<pre><code class="html">&lt;table class=&quot;table table-bordered&quot;&gt;
