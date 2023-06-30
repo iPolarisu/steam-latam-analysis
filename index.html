@@ -86,10 +86,10 @@
 			<li class="nav-item"><a class="nav-link" href="#data_users">Users</a></li>
           </ul>
         </li>
-        <li class="nav-item"><a class="nav-link" href="#pig">Pig</a>
+        <li class="nav-item"><a class="nav-link" href="#pig">Apache Pig</a>
 			<ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link" href="#pig_preparing">Preparing the Script</a></li>
-            <li class="nav-item"><a class="nav-link" href="#pig_running">Running the Script</a></li>
+            <li class="nav-item"><a class="nav-link" href="#pig_preparing">Preparing the Pig Script</a></li>
+            <li class="nav-item"><a class="nav-link" href="#pig_running">Running the Pig Script</a></li>
             <li class="nav-item"><a class="nav-link" href="#pig_results">Results</a></li>
 
       </ul>
@@ -356,50 +356,37 @@
 		<!-- Pig
 		============================ -->
         <section id="pig">
-          <h2>Pig</h2>
-          <p class="lead mb-5">Documentation and examples for displaying typography, code, table, image and video and more..</p>
+          <h2>Apache Pig</h2>
+          <p class="lead mb-5">Apache Pig was used to query the dataset, to do it by yourself, follow these instructions.</p>
         </section>
 		  
 		<!-- preparing
 		============================ -->
 		<section id="pig_preparing">
-		  <h2>Preparing the Script</h2>
-		  <p class="text-4">Documentation and examples for typography, headings, body text, lists, and more.</p>
-		  <h3>Headings</h3>
-		  <table class="table table-bordered">
-                  <thead>
-                    <tr>
-                      <th>Heading</th>
-                      <th>Example</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>&lt;h1&gt;&lt;/h1&gt;</code></td>
-                      <td><h1>h1. Heading</h1></td>
-                    </tr>
-                    <tr>
-                      <td><code>&lt;h2&gt;&lt;/h2&gt;</code></td>
-                      <td><h2>h2. Heading</h2></td>
-                    </tr>
-                    <tr>
-                      <td><code>&lt;h3&gt;&lt;/h3&gt;</code></td>
-                      <td><h3>h3. Heading</h3></td>
-                    </tr>
-                    <tr>
-                      <td><code>&lt;h4&gt;&lt;/h4&gt;</code></td>
-                      <td><h4>h4. Heading</h4></td>
-                    </tr>
-                    <tr>
-                      <td><code>&lt;h5&gt;&lt;/h5&gt;</code></td>
-                      <td><h5>h5. Heading</h5></td>
-                    </tr>
-                    <tr>
-                      <td><code>&lt;h6&gt;&lt;/h6&gt;</code></td>
-                      <td><h6>h6. Heading</h6></td>
-                    </tr>
-                  </tbody>
-                </table>
+		  <h2>Preparing the Pig Script</h2>
+		  <p class="text-4">First of all you need to modify the Apache Pig file.</p>
+		  <p class="text-4">Indicate the PATH to your friends.csv file.</p>
+      <pre><code class="bash">
+        friends_raw = LOAD 'PATH_TO_YOUR_FRIENDS_FILE' USING PigStorage(',') AS (id0, id1, friends_since);
+        friends_raw2 = LOAD 'PATH_TO_YOUR_FRIENDS_FILE' USING PigStorage(',') AS (id0, id1, friends_since);
+      </code></pre>
+      <p class="text-4">Indicate the PATH to your user_info*.csv files.</p>
+      <pre><code class="bash">
+        users_raw = LOAD 'PATH_TO_YOUR_USER_INFO_FILE' USING PigStorage(',') ...
+        users_raw2 = LOAD 'PATH_TO_YOUR_USER_INFO_FILE' USING PigStorage(',') ...
+        users_raw3 = LOAD 'PATH_TO_YOUR_USER_INFO_FILE' USING PigStorage(',') ...
+        ...
+      </code></pre>
+      <p class="text-4">Make sure to modify the amounts of JOINs as needed.</p>
+      <pre><code class="bash">
+        users_raw = UNION users_raw, users_raw2;
+        users_raw = UNION users_raw, users_raw3;
+        ...
+      </code></pre>
+      <p class="text-4">For every STORE operation, use the appropiate PATH.</p>
+      <pre><code class="bash">
+        STORE table INTO 'YOUR_DESIRED_PATH';
+      </code></pre>
 		
 		<h3 class="mt-5">Lead</h3>
 		<p>Make a paragraph stand out by adding <code>.lead</code></p>
