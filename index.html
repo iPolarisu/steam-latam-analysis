@@ -427,7 +427,17 @@
 		============================ -->
 		<section id="pig_results">
 		<h2>Results</h2>
-		<p class="text-4">You can check your results on your STORE_PATHs.</p>
+		<p class="text-4">You can check your results on your STORE_PATHs using bash:</p>
+    <p class="text-4">Local</p>
+      <pre><code class="bash">
+        ls YOUR_DIRECTORY
+        cat YOUR_FILE
+      </code></pre>
+      <p class="text-4">HDFS</p>
+      <pre><code class="bash">
+        hdfs df -ls YOUR_DIRECTORY
+        hdfs dF -cat YOR_FILE
+      </code></pre>
 		
 		</section>
         
