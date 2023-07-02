@@ -188,8 +188,8 @@
 		============================ -->
         <section id="data">
           <h2>Getting the Data</h2>
-          <p class="lead mb-5">Python Scripts to get the data yourself using the SteamAPI.</p>
-          
+          <p class="lead mb-5">If you want to get the data yourself, you can check the <a target="_blank" href="https://github.com/iPolarisu/steam-latam-analysis">project repository</a> and execute the necessary Python Scripts.</p>
+          <p class="alert alert-info">We used Python 3.10+ to run the scripts.</p>
         </section>
 		
         
@@ -199,7 +199,23 @@
 		============================ -->
         <section id="data_ids">
           <h2>Latam IDs</h2>
-          <p class="text-4">Getting Latam IDs data.</p>
+          <p class="text-4">First of all we need to install the necessary modules via pip.</p>
+          <pre><code class="bash">
+            pip install -r requirements.txt
+          </code></pre>
+          <p class="text-4">Now we will use a webscraping script that gets the top 250 user ids with the most friends for each latin american country according to SteamLadder.</p>
+          <pre><code class="bash">
+            cd steam_ladder_data/
+            python steam_ladder_scraper.py
+          </code></pre>
+          <p class="text-4">This will create a steam_most_friends_latam.csv file, it has an ID field and a country code field.</p>
+          <pre><code class="bash">
+            # you should see argentine ids
+            head -10 steam_most_friends_latam.csv
+
+            # you should see venezuelan ids
+            tail -10 steam_most_friends_latam.csv
+          </code></pre>
         </section>
       <hr class="divider">
 		
@@ -207,8 +223,20 @@
 		============================ -->
         <section id="data_friends">
           <h2>Friends</h2>
-          <p class="text-4">Getting friends data.</p>
-      
+          <p class="text-4">First, change the Steam API key in steam_latam_data/steam_api.py with yours.</p>
+          <p class="alert alert-info">You can get yours <a target="_blank" href="https://steamcommunity.com/dev">here</a>.</p>
+          <pre><code class="bash">
+            API_KEY = 'YOUR_API_KEY'
+          </code></pre>
+          <p class="text-4">Now we will get the friendlist of each scraped user.</p>
+          <pre><code class="bash">
+            cd steam_latam_data/steam_friends.py
+            python steam_friends.py
+          </code></pre>
+          <p class="text-4">This will create a friends.csv file, it has an ID field for both users (queried and friend).</p>
+          <pre><code class="bash">
+            head -10 friends.csv
+          </code></pre>  
         </section>
 		
 		<hr class="divider">
@@ -217,7 +245,16 @@
 		============================ -->
         <section id="data_users">
           <h2>Users</h2>
-          <p class="text-4">Getting users data.</p>
+          <p class="text-4">Now we will get the user data of each friend of the scraped users.</p>
+          <pre><code class="bash">
+            python steam_users.py
+          </code></pre>
+          <p class="alert alert-info">You can paralellize the task as needed, for this you need to change the iteration variables to your liking.</p>
+          <p class="alert alert-danger">Remember that you have a maximum of 100k requests per day to the Steam API, you will get errors if you exceed this number. Also you may want to adjust the time between requests variable (TIME).</p>
+          <p class="text-4">This will create a friends.csv file, it has an ID field for both users (queried and friend).</p>
+          <pre><code class="bash">
+            head -10 friends.csv
+          </code></pre> 
 
         </section>
 		
